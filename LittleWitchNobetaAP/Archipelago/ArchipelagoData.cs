@@ -1349,11 +1349,16 @@ public static class ArchipelagoData
                 ItemName = "Abyss Underground Trial After Scissor Enemy Barrier",
                 // Triggers when four stone maid enemies are killed in pit after previous switch
                 // Useless item because player can just return to statue
+                // This release is also not called if released earlier due to strange behavior with
+                // the EnemyDeadEvent2 used to call it, so we shouldn't release barrier on item.
                 TriggerPath = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205",
                 Actions = new()
                 {
                     new MagicWallReleaseAction()
-                        { StageId = StageId.Abyss, Path = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205" },
+                    {
+                        StageId = StageId.Abyss, Path = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205",
+                        DoNotExecuteOnItem = true
+                    },
                 },
             },
             new BarrierMapping()

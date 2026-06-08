@@ -521,8 +521,8 @@ public static class ArchipelagoData
             "TreasureBox_Room08" => "Underground - Chest after fire",
             "Boss_Level02" => "Underground - Defeat Tania",
             // lava_ruins_start_locations
-            "Room02_TreasureBox01" => "Lava Ruins - Chest on scaffolding",
-            "Room02_TreasureBox02" => "Lava Ruins - Chest on left side lava ledge",
+            "Room02_TreasureBox01" => "Lava Ruins - Chest on left side lava ledge",
+            "Room02_TreasureBox02" => "Lava Ruins - Chest on scaffolding",
             "Room03_TreasureBox01" => "Lava Ruins - Absorption spell chest after dropping down",
             "Room03_TreasureBox02" => "Lava Ruins - Chest on right ruins ledge at shotgun enemies magic switch",
             "Room02To04_TreasureBox02" => "Lava Ruins - Wind spell chest behind destructible walls",

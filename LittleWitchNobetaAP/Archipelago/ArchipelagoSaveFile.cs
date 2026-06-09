@@ -25,7 +25,7 @@ public class ArchipelagoSaveFile
 
     public ArchipelagoSaveFile(string seed)
     {
-        var saveFilePath = $"UserData/Slot{Singletons.GameSave?.basic.dataIndex}.cfg";
+        var saveFilePath = $"UserData/Slot{LwnApMod.SelectedSaveSlot}.cfg";
         var saveFileExists = File.Exists(saveFilePath);
 
         ArchipelagoSlotInfoCategory.SetFilePath(saveFilePath);

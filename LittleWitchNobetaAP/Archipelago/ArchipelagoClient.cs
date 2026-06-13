@@ -216,7 +216,7 @@ public class ArchipelagoClient : MonoBehaviour
     /// <summary>
     ///     something went wrong, or we need to properly disconnect from the server. cleanup and re-null our session
     /// </summary>
-    private static void Disconnect()
+    public static void Disconnect()
     {
         Melon<LwnApMod>.Logger.Msg("disconnecting from server...");
 #if NET35

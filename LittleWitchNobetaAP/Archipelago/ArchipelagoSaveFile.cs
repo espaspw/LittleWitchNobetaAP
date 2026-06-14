@@ -43,15 +43,6 @@ public class ArchipelagoSaveFile
         }
         else
         {
-            Melon<LwnApMod>.Logger.Msg($"_receivedItemCount null?: {_receivedItemCount == null}");
-            Melon<LwnApMod>.Logger.Msg($"_checkedLoreItemLocations null?: {_checkedLoreItemLocations == null}");
-            Melon<LwnApMod>.Logger.Msg($"_seed null?: {_seed == null}");
-            Melon<LwnApMod>.Logger.Msg($"ServerData null?: {ArchipelagoClient.ServerData == null}");
-            Melon<LwnApMod>.Logger.Msg($"ServerData.Index null?: {ArchipelagoClient.ServerData.Index == null}");
-            Melon<LwnApMod>.Logger.Msg($"ServerData.CheckedLoreItemLocations null?: {ArchipelagoClient.ServerData.CheckedLoreItemLocations == null}");
-            
-            Melon<LwnApMod>.Logger.Msg($"Item count: {_receivedItemCount.Value}");
-            Melon<LwnApMod>.Logger.Msg($"Checked Lore Items: {string.Join(',', _checkedLoreItemLocations.Value)}");
             ArchipelagoClient.ServerData.Index = _receivedItemCount.Value;
             ArchipelagoClient.ServerData.CheckedLoreItemLocations = _checkedLoreItemLocations.Value
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)

@@ -32,16 +32,28 @@ public static class ItemCheckPatches
             // ReSharper restore InconsistentNaming UnusedMember.Local
         {
             if (!ArchipelagoClient.IsAuthenticated || ArchipelagoClient.Session is null) return;
+            
+            Melon<LwnApMod>.Logger.Msg($"Opened chest {__instance.name}");
+            var chestName = ArchipelagoData.GameLocationToDescriptiveLocation(__instance.name);
 
             // Special exception because TreasureBox instance name TreasureBox_Room03 exists twice
             if (Game.sceneManager.stageId == 3 && __instance.name == "TreasureBox_Room03")
+            {
                 ArchipelagoClient.Session.Locations.CompleteLocationChecks(
                     ArchipelagoClient.Session.Locations.GetLocationIdFromName(
                         "Little Witch Nobeta", "Underground - Chest in alcove before falling rocks"));
+                Melon<LwnApMod>.Logger.Msg($"Chest AP name: Underground - Chest in alcove before falling rocks");
+            }
             else
+            {
                 ArchipelagoClient.Session.Locations.CompleteLocationChecks(
                     ArchipelagoClient.Session.Locations.GetLocationIdFromName("Little Witch Nobeta",
                         ArchipelagoData.GameLocationToDescriptiveLocation(__instance.name)));
+                
+                Melon<LwnApMod>.Logger.Msg($"Chest AP name: {chestName}");
+                Melon<LwnApMod>.Logger.Msg($"Chest AP Id: {ArchipelagoClient.Session.Locations.GetLocationIdFromName("Little Witch Nobeta", chestName)}");
+                Melon<LwnApMod>.Logger.Msg($"Chest client Id: {ArchipelagoData.GetLocationIdByName(chestName)}");
+            }
         }
     }
 

@@ -64,11 +64,12 @@ public class DeathLinkHandler
     {
         try
         {
-            if (_deathLinks.Count < 1) return;
+            var wizardGirl = Singletons.WizardGirl;
+            
+            if (_deathLinks.Count < 1 || wizardGirl is null || !wizardGirl.playerController.CharacterControllable) return;
             _deathLinks.Dequeue();
 
             // Kill the player
-            var wizardGirl = Singletons.WizardGirl;
             wizardGirl?.SetForceSlip();
             wizardGirl?.FallDead();
         }

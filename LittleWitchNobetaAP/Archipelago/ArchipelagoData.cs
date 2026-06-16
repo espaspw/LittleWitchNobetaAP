@@ -247,20 +247,20 @@ public static class ArchipelagoData
         { "Abyss - 91. Gaseous Soul Essence from scissor enemy in underground trial", "Lore" },
         { "Abyss - Underground trial scissor enemy barrier", "Barrier" },
         { "Abyss - Underground trial magic switch", "Barrier" },
-        { "Abyss - Underground Trial Complete", "Abyss Trial" },
+        { "Abyss - Underground trial complete", "Abyss Trial" },
         { "Abyss - 92. Semi-gaseous Soul Essence in front of underground trial magic switch", "Lore" },
         { "Abyss - Thunder spell chest dark tunnel trial", "Chest" },
         { "Abyss - 95. Refined Soul Shard from maid enemy in dark tunnel trial", "Lore" },
         { "Abyss - Dark tunnel trial maid enemy barrier", "Barrier" },
         { "Abyss - Dark Tunnel trial magic switch", "Barrier" },
-        { "Abyss - Dark Tunnel Trial Complete", "Abyss Trial" },
+        { "Abyss - Dark Tunnel trial complete", "Abyss Trial" },
         { "Abyss - 96. Knight's Soul Shard in front of dark tunnel trial magic switch", "Lore" },
         { "Abyss - Ice spell chest lava ruins trial", "Chest" },
         { "Abyss - Lava Ruins trial lower lava switch", "Barrier" },
         { "Abyss - 93. Enchanted Soul Shard from maid enemy in lava ruins trial", "Lore" },
         { "Abyss - Lava Ruins trial defeat maids enemy barrier", "Barrier" },
         { "Abyss - Lava Ruins trial magic switch", "Barrier" },
-        { "Abyss - Lava Ruins Trial Complete", "Abyss Trial" },
+        { "Abyss - Lava Ruins trial complete", "Abyss Trial" },
         { "Abyss - 94. Knight's Soul Shard in front of lava ruins trial magic switch", "Lore" },
         { "Abyss - 102. Lost Maiden's Crafted Soul Shard from Nonota", "Lore" },
         { "Abyss - Nonota", "Event" }
@@ -521,10 +521,10 @@ public static class ArchipelagoData
             "TreasureBox_Room08" => "Underground - Chest after fire",
             "Boss_Level02" => "Underground - Defeat Tania",
             // lava_ruins_start_locations
-            "Room02_TreasureBox01" => "Lava Ruins - Chest on scaffolding",
-            "Room02_TreasureBox02" => "Lava Ruins - Chest on left side lava ledge",
-            "Room03_TreasureBox01" => "Lava Ruins - Absorption spell chest after dropping down",
-            "Room03_TreasureBox02" => "Lava Ruins - Chest on right ruins ledge at shotgun enemies magic switch",
+            "Room02_TreasureBox01" => "Lava Ruins - Chest on right ruins ledge at shotgun enemies magic switch",
+            "Room02_TreasureBox02" => "Lava Ruins - Chest on scaffolding",
+            "Room03_TreasureBox01" => "Lava Ruins - Chest on left side lava ledge",
+            "Room03_TreasureBox02" => "Lava Ruins - Absorption spell chest after dropping down",
             "Room02To04_TreasureBox02" => "Lava Ruins - Wind spell chest behind destructible walls",
             "Room05To06_TreasureBox" => "Lava Ruins - Chest in spewing lava room",
             "Room06_TreasureBox" => "Lava Ruins - Fire spell chest at double staircase",
@@ -535,8 +535,8 @@ public static class ArchipelagoData
             "Room01_TreasureBox" => "Lava Ruins - Ice spell chest in corner on path to dark tunnel",
             // dark_tunnel_start_locations
             "TreasureBox02_Room02_03" => "Dark Tunnel - Absorption spell chest hidden behind rubble at staircase",
-            "TreasureBox02_Room03_01" => "Dark Tunnel - Chest at jump from broken staircase",
-            "TreasureBox02_Room03_02" => "Dark Tunnel - Wind spell chest in dark hole",
+            "TreasureBox02_Room03_01" => "Dark Tunnel - Wind spell chest in dark hole",
+            "TreasureBox02_Room03_02" => "Dark Tunnel - Chest at jump from broken staircase",
             "TreasureBox02_Room04" => "Dark Tunnel - Fire spell chest inside dark maze",
             "TreasureBox02_Room05" => "Dark Tunnel - Thunder spell chest in mimic room",
             // dark_tunnel_after_thunder_locations
@@ -557,8 +557,8 @@ public static class ArchipelagoData
             "TreasureBox02_R08" => "Spirit Realm - Chest before boss behind breakable wall",
             "Boss_Level05" => "Spirit Realm - Vanessa V2",
             // abyss_locations
-            "TreasureBox_Act02Room04" => "Abyss - Arcane spell chest on pillar",
-            "TreasureBox_Act02Room05" => "Abyss - Chest in trap gate",
+            "TreasureBox_Act02Room04" => "Abyss - Chest in trap gate",
+            "TreasureBox_Act02Room05" => "Abyss - Arcane spell chest on pillar",
             // abyss_trials_locations
             "Act04Room05To06_TreasureBox" => "Abyss - Ice spell chest lava ruins trial",
             "Act05_TreasureBox02_Room09To10" => "Abyss - Thunder spell chest dark tunnel trial",
@@ -1014,7 +1014,7 @@ public static class ArchipelagoData
                 LocationName = "Dark Tunnel - Light switch after getting the hat",
                 ItemName = "Dark Tunnel Light Switch Barrier",
                 // Triggers when crystal ball is filled with light
-                TriggerPath = "/SEM/AreaEvent/Room01To02/Other/LoadScript_CrystalBallCompleteSlowMotion",
+                TriggerPath = "/SEM/AreaEvent/Room01To02/Other/LoadScript_CrystalBallCompleteSlowMotion ",
                 Actions = new()
                 {
                     new MagicWallReleaseAction()
@@ -1349,11 +1349,16 @@ public static class ArchipelagoData
                 ItemName = "Abyss Underground Trial After Scissor Enemy Barrier",
                 // Triggers when four stone maid enemies are killed in pit after previous switch
                 // Useless item because player can just return to statue
+                // This release is also not called if released earlier due to strange behavior with
+                // the EnemyDeadEvent2 used to call it, so we shouldn't release barrier on item.
                 TriggerPath = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205",
                 Actions = new()
                 {
                     new MagicWallReleaseAction()
-                        { StageId = StageId.Abyss, Path = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205" },
+                    {
+                        StageId = StageId.Abyss, Path = "/SEM/AreaEvent/Act03/Other/04_MagicWall0205",
+                        DoNotExecuteOnItem = true
+                    },
                 },
             },
             new BarrierMapping()
@@ -1504,6 +1509,23 @@ public static class ArchipelagoData
                         UnityEngine.Object.Destroy(delay1);
                         UnityEngine.Object.Destroy(delay2);
                         UnityEngine.Object.Destroy(delay3);
+                    })
+                }
+            },
+            // Set delay for Abyss trap gate events to a large as possible to prevent the parent MultipleEventOpen event
+            // from attempting to open the gates every frame when the player doesn't have the gate item.
+            new StageLoadAction()
+            {
+                StageId = StageId.Abyss,
+                Actions = new()
+                {
+                    new SpecialAction(() =>
+                    {
+                        var trapDoorsEvent = UnityUtils.FindObjectByPath("/SEM/AreaEvent/Act02/Other/OpenDoor");
+                        var multipleEventOpen = trapDoorsEvent?.GetComponent<MultipleEventOpen>();
+                        if (multipleEventOpen is null || multipleEventOpen.DeltaTime.Length != 3) return;
+                        multipleEventOpen.DeltaTime[0] = float.MaxValue;
+                        multipleEventOpen.DeltaTime[1] = float.MaxValue;
                     })
                 }
             },
@@ -1723,6 +1745,18 @@ public static class ArchipelagoData
     {
         public static readonly List<CutsceneTrigger> Cutscenes = new()
         {
+            // Initial cutscene when entering shrine. Without the cutscene the player will spawn facing the wrong
+            // way (which isn't a big issue). This removal is required for randomized start as this triggers even
+            // if player enters Shrine through a different entrance.
+            new CutsceneTrigger()
+            {
+                StageId = StageId.Shrine,
+                Trigger = "/SEM/AreaEvent/Room01/Other/Room01_OpenDoorScript",
+                ShouldSkip = () =>
+                    (ArchipelagoClient.ServerData.Settings?.DisableUnimportantCutscenes ?? false) ||
+                    ((ArchipelagoClient.ServerData.Settings?.StartLevel !=
+                      ArchipelagoSettings.StartLevelSetting.OkunShrine))
+            },
             // Cutscene when you enter Underground after first boss. This triggers even if the player enters through
             // the shortcut door, which teleports the player to the start and breaks logic
             new CutsceneTrigger()

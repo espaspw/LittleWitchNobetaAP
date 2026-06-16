@@ -15,7 +15,7 @@ namespace LittleWitchNobetaAP.Archipelago;
 
 public class ArchipelagoClient : MonoBehaviour
 {
-    public const string APVersion = "0.6.3";
+    public const string APVersion = "0.6.7";
     private const string Game = "Little Witch Nobeta";
 
     public static readonly ArchipelagoSessionData ServerData = new();
@@ -45,15 +45,6 @@ public class ArchipelagoClient : MonoBehaviour
         {
             Melon<LwnApMod>.Logger.Error(e);
         }
-
-        // Before connecting, reset magic levels to 0 and get them from AP
-        Melon<LwnApMod>.Logger.Msg("Resyncing magic levels");
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.secretMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.iceMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.fireMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.thunderMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.windMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.manaAbsorbLevel = 0;
 
         TryConnect();
     }
@@ -102,22 +93,53 @@ public class ArchipelagoClient : MonoBehaviour
     /// <param name="result"></param>
     private void HandleConnectResult(LoginResult result)
     {
+        GameSave gameSave;
         string outText;
-        if (result.Successful && Session is not null && Singletons.GameSave is not null)
+
+        if (result.Successful && Session is not null)
         {
             var success = (LoginSuccessful)result;
+            var stage = GameStage.Act02_01;
+            var savePoint = -1;
 
             ServerData.SetupSession(success.SlotData, Session.RoomState.Seed);
             IsAuthenticated = true;
 
             DeathLinkHandler = new DeathLinkHandler(Session.CreateDeathLinkService(), ServerData.SlotName);
             Session.Locations.CompleteLocationChecksAsync(ServerData.CheckedLocations.ToArray());
-            outText = $"Successfully connected to {ServerData.Hostname} as {ServerData.SlotName}!";
-
-            ArchipelagoConsole.LogMessage(outText);
+                
             MovementPatches.BlockInput = false;
-            Singletons.GameSave.basic.showTeleportMenu = true;
             Dictionary<string, object> slotData = success.SlotData;
+            
+            // do version check first
+            if (slotData.TryGetValue("world_version", out var version))
+            {
+                var worldVersion = version.ToString();
+                if (worldVersion != MyPluginInfo.PluginVersion)
+                {
+                    outText = $"Apworld version({worldVersion} " +
+                              $"is different to mod version {MyPluginInfo.PluginVersion}, disconnecting...)";
+                    Melon<LwnApMod>.Logger.Error(outText);
+                    ArchipelagoConsole.LogMessage(outText);
+                            
+                    Disconnect();
+                    IsAuthenticated = false;
+                    _isAttemptingConnection = false;
+                    return;
+                }
+            }
+            else
+            {
+                outText = $"Apworld version is missing in slot data, disconnecting because apworld is too old...)";
+                Melon<LwnApMod>.Logger.Error(outText);
+                ArchipelagoConsole.LogMessage(outText);
+                            
+                Disconnect();
+                IsAuthenticated = false;
+                _isAttemptingConnection = false;
+                return;
+            }
+            
             foreach (var optionName in slotData.Keys)
             {
                 Melon<LwnApMod>.Logger.Msg($"Setting option {optionName} to {slotData[optionName]}");
@@ -130,17 +152,65 @@ public class ArchipelagoClient : MonoBehaviour
                     case "trial_keys" when Convert.ToBoolean(slotData[optionName]):
                         TrialKeysPatches.TrialKeysEnabled = true;
                         break;
+                    case "starting_area":
+                        stage = Convert.ToInt32(slotData[optionName]) switch
+                        {
+                            0 => GameStage.Act02_01,
+                            1 => GameStage.Act03_01,
+                            2 => GameStage.Act04_01,
+                            3 => GameStage.Act05_02,
+                            _ => stage
+                        };
+                        savePoint = SceneUtils.SceneStartSavePoint(SceneUtils.SceneNumberFromName(stage.ToString()));
+
+                        break;
                 }
             }
+            
+            MelonCoroutines.Start(LwnApMod.RunOnMainThread(() =>
+            {
+                if (LwnApMod.IsNewGame)
+                {
+                    // Generate the save and apply flag modifications
+                    gameSave = new GameSave(LwnApMod.SelectedSaveSlot, LwnApMod.GameDifficulty)
+                    {
+                        basic =
+                        {
+                            showTeleportMenu = true,
+                            // Set save point to avoid "Return to Statue" early
+                            stage = stage,
+                            savePoint = savePoint
+                        },
+                        stats =
+                        {
+                            // Give souls scaling on start level
+                            //currentMoney = SceneUtils.SceneStartSouls(runtimeVariables.StartScene) * settings.StartSoulsModifier
+                        }
+                    };
+                    Il2Cpp.Game.WriteGameSave(gameSave);
+                }
+                else
+                {
+                    Il2Cpp.Game.ReadGameSave(LwnApMod.SelectedSaveSlot, out gameSave);
+                }
 
-            // Run all scene init patches on connect
-            BarrierPatches.ExecuteAllStageBarrierActions();
-            BossTriggerPatches.HandleBossTriggers();
-            CutsceneSkipPatches.DisableCutscenes();
-            CustomWarpPatches.AddCustomSavePointsOnInit(Singletons.SceneManager);
-            CustomWarpPatches.AddCustomSavePointsOnInitComplete(Singletons.SceneManager);
-            CustomWarpPatches.AddCustomSavePointAssets(Singletons.SceneManager);
-            ArcaneDisabledPatches.DisableManaRegeneration(Singletons.SceneManager);
+                // Before connecting, reset magic levels to 0 and get them from AP
+                Melon<LwnApMod>.Logger.Msg("Resyncing magic levels");
+                gameSave.stats.secretMagicLevel = 0;
+                gameSave.stats.iceMagicLevel = 0;
+                gameSave.stats.fireMagicLevel = 0;
+                gameSave.stats.thunderMagicLevel = 0;
+                gameSave.stats.windMagicLevel = 0;
+                gameSave.stats.manaAbsorbLevel = 0;
+                
+                // Load save
+                var switchData = new SceneSwitchData(gameSave.basic.stage, gameSave.basic.savePoint, false);
+                Il2Cpp.Game.SwitchGameSave(gameSave);
+                Il2Cpp.Game.SwitchScene(switchData);
+            }));
+            
+            outText = $"Successfully connected to {ServerData.Hostname} as {ServerData.SlotName}!";
+            ArchipelagoConsole.LogMessage(outText);
         }
         else
         {
@@ -161,7 +231,7 @@ public class ArchipelagoClient : MonoBehaviour
     /// <summary>
     ///     something went wrong, or we need to properly disconnect from the server. cleanup and re-null our session
     /// </summary>
-    private static void Disconnect()
+    public static void Disconnect()
     {
         Melon<LwnApMod>.Logger.Msg("disconnecting from server...");
 #if NET35
@@ -189,7 +259,6 @@ public class ArchipelagoClient : MonoBehaviour
         var itemGroup = ArchipelagoData.Items[itemName];
         Thread.Sleep(20);
         
-        //Resync spell levels even when they were received before, otherwise skip
         if (helper.Index < ServerData.Index)
         {
             switch (itemGroup)
@@ -221,17 +290,6 @@ public class ArchipelagoClient : MonoBehaviour
         while (PendingItems.Count > 0)
         {
             var itemInfoTuple = PendingItems.Dequeue();
-            var itemName = ArchipelagoData.Items.Keys.ToArray()[itemInfoTuple.Item1.ItemId - 1];
-            var itemGroup = ArchipelagoData.Items[itemName];
-
-            //Resync spell levels even when they were received before, otherwise skip
-            if (itemInfoTuple.Item2 <= ServerData.Index)
-            {
-                if (itemGroup is "Attack Magics" or "Double Jump" or "Counter") IncrementWitchAbility(itemName);
-
-                continue;
-            }
-
             GiveItem(itemInfoTuple.Item1);
         }
     }
@@ -242,7 +300,9 @@ public class ArchipelagoClient : MonoBehaviour
         var itemName = ArchipelagoData.Items.Keys.ToArray()[item.ItemId - 1];
         var itemGroup = ArchipelagoData.Items[itemName];
 
-        if (Singletons.SceneManager && Singletons.SceneManager.stageId >= 2)
+        if (Singletons.SceneManager 
+            && Singletons.SceneManager.stageId >= 2
+            && Singletons.WizardGirl?.playerController.CharacterControllable == true)
         {
             switch (itemGroup)
             {
@@ -252,8 +312,7 @@ public class ArchipelagoClient : MonoBehaviour
                 case "Bag Upgrade":
                     IncrementWitchAbility(itemName);
                     break;
-                case "Boss Tokens":
-                    GiveBossToken(itemName);
+                case "Boss Tokens": // do nothing, already handled elsewhere
                     break;
                 case "Boss Souls":
                     GiveBossSoul(itemName);
@@ -271,6 +330,9 @@ public class ArchipelagoClient : MonoBehaviour
                 case "Magic Barrier":
                 case "Metal Gate":
                     BarrierPatches.OpenBarrierByItemName(itemName);
+                    break;
+                default:
+                    Melon<LwnApMod>.Logger.Error($"Item with Id {item.ItemId} is in unknown item group {itemGroup}");
                     break;
             }
 
@@ -311,6 +373,7 @@ public class ArchipelagoClient : MonoBehaviour
         else
         {
             // queue item here
+            Melon<LwnApMod>.Logger.Msg($"Queueing item with Id {item.ItemId}");
             PendingItems.Enqueue(new Tuple<ItemInfo, int>(item, ServerData.Index));
         }
     }
@@ -426,31 +489,6 @@ public class ArchipelagoClient : MonoBehaviour
                 break;
             case "Mana Drain Trap":
                 FillerItemPatches.QueueTrap(TrapType.ManaDrainTrap);
-                break;
-        }
-    }
-
-    private static void GiveBossToken(string itemName)
-    {
-        switch (itemName)
-        {
-            case "Specter Armor Token":
-                ServerData.KilledBosses.Add("Boss_Act01");
-                break;
-            case "Tania Token":
-                ServerData.KilledBosses.Add("Boss_Level02");
-                break;
-            case "Monica Token":
-                ServerData.KilledBosses.Add("Boss_Level03_Big");
-                break;
-            case "Enraged Armor Token":
-                ServerData.KilledBosses.Add("Boss_Act01_Plus");
-                break;
-            case "Vanessa Token":
-                ServerData.KilledBosses.Add("Boss_Level04");
-                break;
-            case "Vanessa V2 Token":
-                ServerData.KilledBosses.Add("Boss_Level05");
                 break;
         }
     }

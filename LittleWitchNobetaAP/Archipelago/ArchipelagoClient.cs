@@ -110,6 +110,36 @@ public class ArchipelagoClient : MonoBehaviour
                 
             MovementPatches.BlockInput = false;
             Dictionary<string, object> slotData = success.SlotData;
+            
+            // do version check first
+            if (slotData.TryGetValue("world_version", out var version))
+            {
+                var worldVersion = version.ToString();
+                if (worldVersion != MyPluginInfo.PluginVersion)
+                {
+                    outText = $"Apworld version({worldVersion} " +
+                              $"is different to mod version {MyPluginInfo.PluginVersion}, disconnecting...)";
+                    Melon<LwnApMod>.Logger.Error(outText);
+                    ArchipelagoConsole.LogMessage(outText);
+                            
+                    Disconnect();
+                    IsAuthenticated = false;
+                    _isAttemptingConnection = false;
+                    return;
+                }
+            }
+            else
+            {
+                outText = $"Apworld version is missing in slot data, disconnecting because apworld is too old...)";
+                Melon<LwnApMod>.Logger.Error(outText);
+                ArchipelagoConsole.LogMessage(outText);
+                            
+                Disconnect();
+                IsAuthenticated = false;
+                _isAttemptingConnection = false;
+                return;
+            }
+            
             foreach (var optionName in slotData.Keys)
             {
                 Melon<LwnApMod>.Logger.Msg($"Setting option {optionName} to {slotData[optionName]}");
@@ -133,21 +163,6 @@ public class ArchipelagoClient : MonoBehaviour
                         };
                         savePoint = SceneUtils.SceneStartSavePoint(SceneUtils.SceneNumberFromName(stage.ToString()));
 
-                        break;
-                    case "world_version":
-                        var worldVersion = slotData[optionName].ToString();
-                        if (worldVersion != MyPluginInfo.PluginVersion)
-                        {
-                            outText = $"Apworld version({worldVersion} " +
-                                      $"is different to mod version {MyPluginInfo.PluginVersion}, disconnecting...)";
-                            Melon<LwnApMod>.Logger.Error(outText);
-                            ArchipelagoConsole.LogMessage(outText);
-                            
-                            Disconnect();
-                            IsAuthenticated = false;
-                            _isAttemptingConnection = false;
-                            return;
-                        }
                         break;
                 }
             }

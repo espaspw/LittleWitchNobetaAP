@@ -8,13 +8,9 @@ public class ArchipelagoSaveFile
     private static readonly MelonPreferences_Category ArchipelagoSlotInfoCategory =
         MelonPreferences.CreateCategory("LwnApSaveFileCategory", "LwnApSaveFileCategory", false, false);
 
-    private readonly MelonPreferences_Entry<int> _receivedItemCount =
-        ArchipelagoSlotInfoCategory.CreateEntry("ReceivedItemCount", 0);
-
-    private readonly MelonPreferences_Entry<string> _seed = ArchipelagoSlotInfoCategory.CreateEntry("Seed", "-1");
-
-    private readonly MelonPreferences_Entry<string> _checkedLoreItemLocations =
-        ArchipelagoSlotInfoCategory.CreateEntry("CheckedLoreItemLocations", "");
+    private readonly MelonPreferences_Entry<int> _receivedItemCount;
+    private readonly MelonPreferences_Entry<string> _seed;
+    private readonly MelonPreferences_Entry<string> _checkedLoreItemLocations;
     /*private MelonPreferences_Entry<string> _hostName;
     private MelonPreferences_Entry<string> _slotName;
     private MelonPreferences_Entry<string> _password;
@@ -25,7 +21,19 @@ public class ArchipelagoSaveFile
 
     public ArchipelagoSaveFile(string seed)
     {
-        var saveFilePath = $"UserData/Slot{Singletons.GameSave?.basic.dataIndex}.cfg";
+        _receivedItemCount = ArchipelagoSlotInfoCategory.HasEntry("ReceivedItemCount")
+            ? ArchipelagoSlotInfoCategory.GetEntry<int>("ReceivedItemCount")
+            : ArchipelagoSlotInfoCategory.CreateEntry("ReceivedItemCount", 0);
+        
+        _seed = ArchipelagoSlotInfoCategory.HasEntry("Seed")
+            ? ArchipelagoSlotInfoCategory.GetEntry<string>("Seed")
+            : ArchipelagoSlotInfoCategory.CreateEntry("Seed", "-1");
+        
+        _checkedLoreItemLocations = ArchipelagoSlotInfoCategory.HasEntry("CheckedLoreItemLocations")
+            ? ArchipelagoSlotInfoCategory.GetEntry<string>("CheckedLoreItemLocations")
+            : ArchipelagoSlotInfoCategory.CreateEntry("CheckedLoreItemLocations", "");
+        
+        var saveFilePath = $"UserData/Slot{LwnApMod.SelectedSaveSlot}.cfg";
         var saveFileExists = File.Exists(saveFilePath);
 
         ArchipelagoSlotInfoCategory.SetFilePath(saveFilePath);
@@ -35,8 +43,6 @@ public class ArchipelagoSaveFile
         }
         else
         {
-            Melon<LwnApMod>.Logger.Msg($"Item count: {_receivedItemCount.Value}");
-            Melon<LwnApMod>.Logger.Msg($"Checked Lore Items: {string.Join(',', _checkedLoreItemLocations.Value)}");
             ArchipelagoClient.ServerData.Index = _receivedItemCount.Value;
             ArchipelagoClient.ServerData.CheckedLoreItemLocations = _checkedLoreItemLocations.Value
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)

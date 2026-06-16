@@ -46,15 +46,6 @@ public class ArchipelagoClient : MonoBehaviour
             Melon<LwnApMod>.Logger.Error(e);
         }
 
-        // Before connecting, reset magic levels to 0 and get them from AP
-        Melon<LwnApMod>.Logger.Msg("Resyncing magic levels");
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.secretMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.iceMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.fireMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.thunderMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.windMagicLevel = 0;
-        if (Singletons.GameSave != null) Singletons.GameSave.stats.manaAbsorbLevel = 0;
-
         TryConnect();
     }
 
@@ -187,6 +178,15 @@ public class ArchipelagoClient : MonoBehaviour
                 {
                     Il2Cpp.Game.ReadGameSave(LwnApMod.SelectedSaveSlot, out gameSave);
                 }
+
+                // Before connecting, reset magic levels to 0 and get them from AP
+                Melon<LwnApMod>.Logger.Msg("Resyncing magic levels");
+                gameSave.stats.secretMagicLevel = 0;
+                gameSave.stats.iceMagicLevel = 0;
+                gameSave.stats.fireMagicLevel = 0;
+                gameSave.stats.thunderMagicLevel = 0;
+                gameSave.stats.windMagicLevel = 0;
+                gameSave.stats.manaAbsorbLevel = 0;
                 
                 // Load save
                 var switchData = new SceneSwitchData(gameSave.basic.stage, gameSave.basic.savePoint, false);
@@ -216,7 +216,7 @@ public class ArchipelagoClient : MonoBehaviour
     /// <summary>
     ///     something went wrong, or we need to properly disconnect from the server. cleanup and re-null our session
     /// </summary>
-    private static void Disconnect()
+    public static void Disconnect()
     {
         Melon<LwnApMod>.Logger.Msg("disconnecting from server...");
 #if NET35
@@ -244,7 +244,6 @@ public class ArchipelagoClient : MonoBehaviour
         var itemGroup = ArchipelagoData.Items[itemName];
         Thread.Sleep(20);
         
-        //Resync spell levels even when they were received before, otherwise skip
         if (helper.Index < ServerData.Index)
         {
             switch (itemGroup)
@@ -276,17 +275,6 @@ public class ArchipelagoClient : MonoBehaviour
         while (PendingItems.Count > 0)
         {
             var itemInfoTuple = PendingItems.Dequeue();
-            var itemName = ArchipelagoData.Items.Keys.ToArray()[itemInfoTuple.Item1.ItemId - 1];
-            var itemGroup = ArchipelagoData.Items[itemName];
-
-            //Resync spell levels even when they were received before, otherwise skip
-            if (itemInfoTuple.Item2 <= ServerData.Index)
-            {
-                if (itemGroup is "Attack Magics" or "Double Jump" or "Counter") IncrementWitchAbility(itemName);
-
-                continue;
-            }
-
             GiveItem(itemInfoTuple.Item1);
         }
     }
@@ -297,7 +285,9 @@ public class ArchipelagoClient : MonoBehaviour
         var itemName = ArchipelagoData.Items.Keys.ToArray()[item.ItemId - 1];
         var itemGroup = ArchipelagoData.Items[itemName];
 
-        if (Singletons.SceneManager && Singletons.SceneManager.stageId >= 2)
+        if (Singletons.SceneManager 
+            && Singletons.SceneManager.stageId >= 2
+            && Singletons.WizardGirl?.playerController.CharacterControllable == true)
         {
             switch (itemGroup)
             {
@@ -368,6 +358,7 @@ public class ArchipelagoClient : MonoBehaviour
         else
         {
             // queue item here
+            Melon<LwnApMod>.Logger.Msg($"Queueing item with Id {item.ItemId}");
             PendingItems.Enqueue(new Tuple<ItemInfo, int>(item, ServerData.Index));
         }
     }

@@ -55,12 +55,10 @@ public static class StatueUnlockPatches
             
             switch (stageId)
             {
-                case > 1 when __instance.GetPlayerStatus() == NobetaState.SavePointUI:
+                case > 1 when __instance.playerController.CharacterControllable:
+                    ArchipelagoClient.DeathLinkHandler?.KillPlayer();
                     // Check if new items received while offline
                     ArchipelagoClient.DequeueItems();
-                    break;
-                case > 1:
-                    ArchipelagoClient.DeathLinkHandler?.KillPlayer();
                     break;
             }
 

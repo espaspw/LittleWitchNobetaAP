@@ -104,7 +104,7 @@ public static class ArchipelagoData
         { "Underground - Chest after fire", "Chest" },
         { "Underground - After fire magic switch", "Barrier" },
         { "Underground - Defeat enemies barrier", "Barrier" },
-        { "Underground - Defeat Tania", "Bosses" },
+        { "Underground - Defeat tania", "Bosses" },
         { "Underground - Tania boss arena barrier", "Barrier" },
         { "Underground - Tania shortcut switch on Tania side", "Metal Gate" },
         { "Underground - 98. Lost Maiden's Soul Shard from Tania", "Lore" },
@@ -519,7 +519,7 @@ public static class ArchipelagoData
             "04_SkillBookAgain" => "Underground - Cat absorption hint & gift",
             //underground_tania_locations
             "TreasureBox_Room08" => "Underground - Chest after fire",
-            "Boss_Level02" => "Underground - Defeat Tania",
+            "Boss_Level02" => "Underground - Defeat tania",
             // lava_ruins_start_locations
             "Room02_TreasureBox01" => "Lava Ruins - Chest on right ruins ledge at shotgun enemies magic switch",
             "Room02_TreasureBox02" => "Lava Ruins - Chest on scaffolding",
@@ -781,7 +781,7 @@ public static class ArchipelagoData
                 LocationName = "Underground - Tania shortcut switch on statue side",
                 ItemName = "Underground Tania Shortcut Gate On Grand Hall Side",
                 // Triggers when lever is flipped
-                TriggerPath = "/Scene/Room09To07/Other/SceneSwitch02",
+                TriggerPath = "/Scene/Room09To07/Other/SceneSwitch01",
                 Actions = new()
                 {
                     new OpenDoorAction
@@ -812,7 +812,7 @@ public static class ArchipelagoData
                 LocationName = "Underground - Tania shortcut switch on Tania side",
                 ItemName = "Underground Tania Shortcut Gate On Tania Side",
                 // Triggers when lever is flipped
-                TriggerPath = "/Scene/Room09To07/Other/SceneSwitch01",
+                TriggerPath = "/Scene/Room09To07/Other/SceneSwitch02",
                 Actions = new()
                 {
                     new OpenDoorAction
@@ -838,7 +838,7 @@ public static class ArchipelagoData
                 LocationName = "Underground - Tania boss arena barrier",
                 ItemName = "Underground Tania Arena Barrier",
                 // Triggers when Tania is defeated
-                TriggerPath = "/SEM/AreaEvent/RoomBoss/Other/LoadScriptDialogue_RoomBossEnd",
+                TriggerPath = "/SEM/AreaEvent/RoomBoss/Other/LoadScript02",
                 Actions = new()
                 {
                     new MagicWallReleaseAction

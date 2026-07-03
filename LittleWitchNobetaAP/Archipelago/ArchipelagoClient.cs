@@ -101,14 +101,6 @@ public class ArchipelagoClient : MonoBehaviour
             var success = (LoginSuccessful)result;
             var stage = GameStage.Act02_01;
             var savePoint = -1;
-
-            ServerData.SetupSession(success.SlotData, Session.RoomState.Seed);
-            IsAuthenticated = true;
-
-            DeathLinkHandler = new DeathLinkHandler(Session.CreateDeathLinkService(), ServerData.SlotName);
-            Session.Locations.CompleteLocationChecksAsync(ServerData.CheckedLocations.ToArray());
-                
-            MovementPatches.BlockInput = false;
             Dictionary<string, object> slotData = success.SlotData;
             
             // do version check first
@@ -139,6 +131,14 @@ public class ArchipelagoClient : MonoBehaviour
                 _isAttemptingConnection = false;
                 return;
             }
+
+            ServerData.SetupSession(success.SlotData, Session.RoomState.Seed);
+            IsAuthenticated = true;
+
+            DeathLinkHandler = new DeathLinkHandler(Session.CreateDeathLinkService(), ServerData.SlotName);
+            Session.Locations.CompleteLocationChecksAsync(ServerData.CheckedLocations.ToArray());
+                
+            MovementPatches.BlockInput = false;
             
             foreach (var optionName in slotData.Keys)
             {

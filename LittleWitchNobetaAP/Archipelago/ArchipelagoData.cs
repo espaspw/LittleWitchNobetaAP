@@ -689,8 +689,8 @@ public static class ArchipelagoData
                 TriggerPath = "/SEM/AreaEvent/Room10/Other/OpenScriptEvent_Room10",
                 Actions = new()
                 {
-                    new MagicWallReleaseAction
-                        { StageId = StageId.Shrine, Path = "/SEM/AreaEvent/Room10/Other/04.MagicWall" },
+                    // new MagicWallReleaseAction
+                    //     { StageId = StageId.Shrine, Path = "/SEM/AreaEvent/Room10/Other/04.MagicWall" },
                     new MagicWallReleaseAction
                         { StageId = StageId.Shrine, Path = "/SEM/AreaEvent/Room10/Other/05.MagicWall" },
                 },
@@ -1556,6 +1556,15 @@ public static class ArchipelagoData
                 Actions = new()
                 {
                     new MagicWallStartAction() { Path = "/SEM/AreaEvent/Room09/Other/MagicWall_Room09" }
+                }
+            },
+            new StageLoadAction()
+            {
+                StageId = StageId.Shrine,
+                ItemName = "Defeat Enraged Armor Barrier",
+                Actions = new()
+                {
+                    new MagicWallStartAction() { Path = "/SEM/AreaEvent/Room10/Other/05.MagicWall" }
                 }
             },
             new StageLoadAction()

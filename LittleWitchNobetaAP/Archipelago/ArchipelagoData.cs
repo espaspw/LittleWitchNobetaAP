@@ -104,7 +104,7 @@ public static class ArchipelagoData
         { "Underground - Chest after fire", "Chest" },
         { "Underground - After fire magic switch", "Barrier" },
         { "Underground - Defeat enemies barrier", "Barrier" },
-        { "Underground - Defeat tania", "Bosses" },
+        { "Underground - Tania", "Bosses" },
         { "Underground - Tania boss arena barrier", "Barrier" },
         { "Underground - Tania shortcut switch on Tania side", "Metal Gate" },
         { "Underground - 98. Lost Maiden's Soul Shard from Tania", "Lore" },
@@ -519,7 +519,7 @@ public static class ArchipelagoData
             "04_SkillBookAgain" => "Underground - Cat absorption hint & gift",
             //underground_tania_locations
             "TreasureBox_Room08" => "Underground - Chest after fire",
-            "Boss_Level02" => "Underground - Defeat tania",
+            "Boss_Level02" => "Underground - Tania",
             // lava_ruins_start_locations
             "Room02_TreasureBox01" => "Lava Ruins - Chest on right ruins ledge at shotgun enemies magic switch",
             "Room02_TreasureBox02" => "Lava Ruins - Chest on scaffolding",

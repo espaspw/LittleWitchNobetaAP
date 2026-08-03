@@ -1301,7 +1301,8 @@ public static class ArchipelagoData
                 LocationName = "Abyss - Trap gate trigger",
                 ItemName = "Abyss Trap Gates",
                 // Triggers when player leaves the area
-                TriggerPath = "/SEM/AreaEvent/Act02/Other/FightDoorEnemy",
+                // TriggerPath = "/SEM/AreaEvent/Act02/Other/FightDoorEnemy",
+                TriggerPath = "/SEM/AreaEvent/Act02/AreaCreateEnemy/03_MonsterCallCreate",
                 Actions = new()
                 {
                     new OpenDoorAction()
@@ -1431,7 +1432,8 @@ public static class ArchipelagoData
                 LocationName = "Abyss - Lava Ruins trial defeat maids enemy barrier",
                 ItemName = "Abyss Lava Ruins Trial Maid Enemy Barrier",
                 // Triggers when switch is destroyed
-                TriggerPath = "/SEM/AreaEvent/Act04/Other/MagicWall",
+                // TriggerPath = "/SEM/AreaEvent/Act04/Other/MagicWall",
+                TriggerPath = "/SEM/AreaEvent/Act04/Other/Flag_Act04Clear",
                 Actions = new()
                 {
                     new MagicWallReleaseAction()

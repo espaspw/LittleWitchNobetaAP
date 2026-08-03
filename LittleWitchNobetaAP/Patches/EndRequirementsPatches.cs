@@ -175,17 +175,19 @@ public class EndRequirementsPatches
             var locationName = path switch
             {
                 "/Scene/RoomCentral/Special/SwitchDevice_Strengthen (1)/AttackabclObject02_Act03" =>
-                    "Abyss - Underground Trial Complete",
+                    "Abyss - Underground trial complete",
                 "/Scene/RoomCentral/Special/SwitchDevice_Strengthen/AttackabclObject01_Act04" =>
-                    "Abyss - Lava Ruins Trial Complete",
+                    "Abyss - Lava Ruins trial complete",
                 "/Scene/RoomCentral/Special/SwitchDevice_Strengthen (2)/AttackabclObject03_Act05" =>
-                    "Abyss - Dark Tunnel Trial Complete",
+                    "Abyss - Dark Tunnel trial complete",
                 _ => null
             };
 
             if (locationName is null) return;
             Melon<LwnApMod>.Logger.Msg($"Abyss trial switch release event detected with path {path}.");
             var locationId = ArchipelagoData.GetLocationIdByName(locationName);
+            Melon<LwnApMod>.Logger.Msg(
+                $"AP Location: Abyss Trial \"{locationName}\" ({locationId}) at trigger {path} checked.");
             ArchipelagoClient.Session.Locations.CompleteLocationChecks(locationId);
 
         }

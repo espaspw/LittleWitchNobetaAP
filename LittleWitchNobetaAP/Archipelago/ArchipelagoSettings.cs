@@ -59,12 +59,12 @@ public class ArchipelagoSettings
 
     public enum StartLevelSetting
     {
-        Random,
         OkunShrine,
         UndergroundCave,
         LavaRuins,
         DarkTunnel,
-        SpiritRealm
+        SpiritRealm,
+        Random
     }
 
     public GoalType Goal;
@@ -106,7 +106,7 @@ public class ArchipelagoSettings
         AbyssTrialRequirement = (AbyssTrialRequirementType)(long)slotData["abyss_trial_requirement"];
         ShortcutGateBehaviour = (ShortcutGateBehaviourType)(long)slotData["shortcut_gate_behaviour"];
         BarrierBehaviour = (MagicPuzzleGateBehaviourType)(long)slotData["barrier_behaviour"];
-        StartLevel = StartLevelSetting.OkunShrine;
+        StartLevel = (StartLevelSetting)(long)slotData["starting_area"];
         NoManaRegeneration = (bool)slotData["no_mana_regeneration"];
         RandomizeBossSoulsEnabled = (bool)slotData["randomize_boss_souls"];
         RandomizedBossTokensEnabled = (bool)slotData["randomize_boss_tokens"];

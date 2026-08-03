@@ -1503,6 +1503,8 @@ public static class ArchipelagoData
                 {
                     new SpecialAction(() =>
                     {
+                        if (ArchipelagoClient.ServerData.Settings?.ShortcutGateBehaviour ==
+                            ArchipelagoSettings.ShortcutGateBehaviourType.Vanilla) return;
                         var delay1 = UnityUtils.FindObjectByPath("/SEM/AreaEvent/Room07/Other/DelayMoveFloor01");
                         var delay2 = UnityUtils.FindObjectByPath("/SEM/AreaEvent/Room07/Other/DelayMoveFloor02");
                         var delay3 = UnityUtils.FindObjectByPath("/SEM/AreaEvent/Room07/Other/DelayMoveFloor03");

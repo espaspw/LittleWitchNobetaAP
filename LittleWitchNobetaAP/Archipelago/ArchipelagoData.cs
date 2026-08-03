@@ -1549,6 +1549,28 @@ public static class ArchipelagoData
 
             new StageLoadAction()
             {
+                // This barrier only activates when the player enters the room from the start, meaning
+                // it must be enabled to block backwards movement.
+                StageId = StageId.Shrine,
+                ItemName = "Shrine First Magic Barrier",
+                Actions = new()
+                {
+                    new MagicWallStartAction() { Path = "/SEM/AreaEvent/Room03/Other/MagicWall_Room03" }
+                }
+            },
+            new StageLoadAction()
+            {
+                // The activation cutscene is right before the barrier. This is enabled to preserve logic,
+                // and also prevents the second switch from showing when moving backwards without the barrier item.
+                StageId = StageId.Shrine,
+                ItemName = "Shrine Second Magic Barrier",
+                Actions = new()
+                {
+                    new MagicWallStartAction() { Path = "/SEM/AreaEvent/Room04/Other/MagicWall_Room04" }
+                }
+            },
+            new StageLoadAction()
+            {
                 // Barrier normally only enables when entering from front, meaning won't block movement
                 // from Enranged Armor arena room.
                 StageId = StageId.Shrine,

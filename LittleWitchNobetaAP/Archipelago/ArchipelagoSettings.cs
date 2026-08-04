@@ -64,7 +64,6 @@ public class ArchipelagoSettings
         LavaRuins,
         DarkTunnel,
         SpiritRealm,
-        Random
     }
 
     public GoalType Goal;

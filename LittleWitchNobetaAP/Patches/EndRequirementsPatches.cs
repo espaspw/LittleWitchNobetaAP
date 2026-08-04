@@ -36,13 +36,15 @@ public class EndRequirementsPatches
         {
             case ArchipelagoSettings.AbyssTrialRequirementType.MagicMaster:
             {
-                return Singletons.GameSave?.stats is
-                {
-                    secretMagicLevel: >= 5,
-                    iceMagicLevel: >= 5,
-                    fireMagicLevel: >= 5,
-                    thunderMagicLevel: >= 5,
-                };
+                var requiredLevel = ArchipelagoClient.ServerData.Settings.CondensedMagic
+                    ? 1
+                    : ArchipelagoClient.ServerData.Settings.MaxMagicLevel;
+
+                return Singletons.GameSave?.stats is { } stats &&
+                       stats.secretMagicLevel >= requiredLevel &&
+                       stats.iceMagicLevel >= requiredLevel &&
+                       stats.fireMagicLevel >= requiredLevel &&
+                       stats.thunderMagicLevel >= requiredLevel;
             }
             case ArchipelagoSettings.AbyssTrialRequirementType.BossHunt:
             {
@@ -220,19 +222,22 @@ public class EndRequirementsPatches
             {
                 case ArchipelagoSettings.GoalType.MagicMaster:
                 {
-                    if (Singletons.GameSave?.stats is not
-                        {
-                            secretMagicLevel: >= 5,
-                            iceMagicLevel: >= 5,
-                            fireMagicLevel: >= 5,
-                            thunderMagicLevel: >= 5,
-                        })
+                    var requiredLevel = ArchipelagoClient.ServerData.Settings.CondensedMagic
+                        ? 1
+                        : ArchipelagoClient.ServerData.Settings.MaxMagicLevel;
+                    var hasMetRequirements = Singletons.GameSave?.stats is { } stats &&
+                                             stats.secretMagicLevel >= requiredLevel &&
+                                             stats.iceMagicLevel >= requiredLevel &&
+                                             stats.fireMagicLevel >= requiredLevel &&
+                                             stats.thunderMagicLevel >= requiredLevel;
+
+                    if (hasMetRequirements)
                     {
-                        Game.AppearEventPrompt("Only a Magic Master may approach the throne.");
+                        _nonotaTrigger.SetActive(true);
                     }
                     else
                     {
-                        _nonotaTrigger.SetActive(true);
+                        Game.AppearEventPrompt("Only a Magic Master may approach the throne.");
                     }
 
                     break;
@@ -328,7 +333,7 @@ public class EndRequirementsPatches
                     case ArchipelagoSettings.AbyssTrialRequirementType.RandomizedItem:
                         Game.AppearEventPrompt("Only a holder of the three trial items may open the path.");
                         break;
-                    case  ArchipelagoSettings.AbyssTrialRequirementType.Vanilla:
+                    case ArchipelagoSettings.AbyssTrialRequirementType.Vanilla:
                         Game.AppearEventPrompt("Complete the three trials to open the path.");
                         break;
                 }

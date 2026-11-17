@@ -3,7 +3,9 @@ using Archipelago.MultiClient.Net.Packets;
 using HarmonyLib;
 using Il2Cpp;
 using LittleWitchNobetaAP.Archipelago;
+using LittleWitchNobetaAP.Utils;
 using MelonLoader;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace LittleWitchNobetaAP.Patches;
@@ -32,7 +34,7 @@ public static class ItemCheckPatches
             // ReSharper restore InconsistentNaming UnusedMember.Local
         {
             if (!ArchipelagoClient.IsAuthenticated || ArchipelagoClient.Session is null) return;
-            
+
             Melon<LwnApMod>.Logger.Msg($"Opened chest {__instance.name}");
             var chestName = ArchipelagoData.GameLocationToDescriptiveLocation(__instance.name);
 
@@ -49,9 +51,10 @@ public static class ItemCheckPatches
                 ArchipelagoClient.Session.Locations.CompleteLocationChecks(
                     ArchipelagoClient.Session.Locations.GetLocationIdFromName("Little Witch Nobeta",
                         ArchipelagoData.GameLocationToDescriptiveLocation(__instance.name)));
-                
+
                 Melon<LwnApMod>.Logger.Msg($"Chest AP name: {chestName}");
-                Melon<LwnApMod>.Logger.Msg($"Chest AP Id: {ArchipelagoClient.Session.Locations.GetLocationIdFromName("Little Witch Nobeta", chestName)}");
+                Melon<LwnApMod>.Logger.Msg(
+                    $"Chest AP Id: {ArchipelagoClient.Session.Locations.GetLocationIdFromName("Little Witch Nobeta", chestName)}");
                 Melon<LwnApMod>.Logger.Msg($"Chest client Id: {ArchipelagoData.GetLocationIdByName(chestName)}");
             }
         }
@@ -184,6 +187,14 @@ public static class ItemCheckPatches
             // ReSharper restore InconsistentNaming UnusedMember.Local
         {
             if (!ArchipelagoClient.IsAuthenticated || ArchipelagoClient.Session is null) return true;
+
+            // Disable all lore items entirely when lore is disabled in settings
+            if (ArchipelagoClient.ServerData.Settings?.RandomizeLoreEnabled == ArchipelagoSettings.RandomizeLore.NoLore)
+            {
+                __result = true;
+                return false;
+            }
+
             // Use actual received lore data for special AP lore received menu
             if (ItemMenuPatches.IsOnInjectedMenu) return true;
             // Otherwise return fake lore items for checked locations
@@ -238,6 +249,79 @@ public static class ItemCheckPatches
                     break;
                 }
             }
+        }
+    }
+
+    private const float CoordinateTolerance = 3.0f;
+
+    // ReSharper disable InconsistentNaming
+    private static void HandleDamageObject(DamageObject __instance)
+        // ReSharper restore InconsistentNaming
+    {
+        if (!ArchipelagoClient.IsAuthenticated || ArchipelagoClient.Session is null)
+        {
+            return;
+        }
+
+        var stageId = Singletons.SceneManager.stageId;
+        var path = UnityUtils.GetObjectPath(__instance.gameObject);
+        var pos = __instance.transform.position;
+        Melon<LwnApMod>.Logger.Msg($"Damage object {path} at {pos.ToString("F2")}.");
+
+        if (!ArchipelagoData.BreakableItems.ByStageIdAndPath.TryGetValue(stageId, out var stageLookup))
+            return;
+        var matchingItems = stageLookup[path];
+        var breakableItems = matchingItems.ToList();
+        if (!breakableItems.Any()) return;
+
+        var exactCoordinateMatch = breakableItems.FirstOrDefault(item =>
+            item.Position.HasValue &&
+            Vector3.Distance(item.Position.Value, pos) <= CoordinateTolerance);
+
+        // Get breakable item matching path name, and must match coordinates if provided for that item
+        var matchedItem = exactCoordinateMatch ??
+                          breakableItems.FirstOrDefault(item => !item.Position.HasValue);
+
+        if (matchedItem == null) return;
+
+        // Only send check if that setting type is enabled
+        var isEnabled = matchedItem.Type switch
+        {
+            BreakableItemType.Jug => ArchipelagoClient.ServerData.Settings?.RandomizeJugsEnabled ?? false,
+            BreakableItemType.Barrel => ArchipelagoClient.ServerData.Settings?.RandomizeBarrelsEnabled ?? false,
+            BreakableItemType.Doll => ArchipelagoClient.ServerData.Settings?.RandomizeBrokenDollsEnabled ?? false,
+            BreakableItemType.Crystal => ArchipelagoClient.ServerData.Settings?.RandomizeCrystalsEnabled ?? false,
+            _ => true
+        };
+
+        if (!isEnabled) return;
+
+        Melon<LwnApMod>.Logger.Msg($"Damage object mapped to location ({matchedItem.LocationName}).");
+        ArchipelagoClient.Session?.Locations.CompleteLocationChecks(
+            ArchipelagoData.GetLocationIdByName(matchedItem.LocationName));
+    }
+
+    [HarmonyPatch(typeof(DamageObject), nameof(DamageObject.SetDamage))]
+    private static class DamageObjectSetDamage
+    {
+        [HarmonyPrefix]
+        // ReSharper disable InconsistentNaming UnusedMember.Local
+        private static void DamageObjectSetDamagePrefix(DamageObject __instance)
+            // ReSharper restore InconsistentNaming UnusedMember.Local
+        {
+            HandleDamageObject(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(DamageObject02), nameof(DamageObject02.SetDamage))]
+    private static class DamageObjectSetDamage02
+    {
+        [HarmonyPrefix]
+        // ReSharper disable InconsistentNaming UnusedMember.Local
+        private static void DamageObject02SetDamagePrefix(DamageObject __instance)
+            // ReSharper restore InconsistentNaming UnusedMember.Local
+        {
+            HandleDamageObject(__instance);
         }
     }
 }

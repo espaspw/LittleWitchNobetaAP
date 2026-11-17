@@ -468,13 +468,13 @@ public class ArchipelagoClient : MonoBehaviour
                 GiveGameItem(ItemSystem.ItemType.HolyB);
                 break;
             case "Souls":
-                GiveSouls(SoulSystem.SoulType.Money, 400);
+                GiveSouls(SoulSystem.SoulType.Money, ServerData.Settings?.FillerSoulsAmount ?? 100);
                 break;
             case "HP Souls":
-                GiveSouls(SoulSystem.SoulType.HP, Random.Next(1, 400));
+                GiveSouls(SoulSystem.SoulType.HP, Random.Next(1, 200));
                 break;
             case "MP Souls":
-                GiveSouls(SoulSystem.SoulType.MP, Random.Next(1, 400));
+                GiveSouls(SoulSystem.SoulType.MP, Random.Next(1, 200));
                 break;
         }
     }

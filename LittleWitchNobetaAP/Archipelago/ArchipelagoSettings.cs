@@ -82,6 +82,7 @@ public class ArchipelagoSettings
     public bool DeathLinkEnabled;
     public int SoulGainBaseValue;
     public int SoulGainFactor;
+    public int FillerSoulsAmount;
 
     public bool DisableDarkTunnelThunderWall;
     public bool DisableDarkTunnelBridgeCollapse;
@@ -119,5 +120,6 @@ public class ArchipelagoSettings
         DisableDarkTunnelThunderWall = (bool)slotData["disable_dark_tunnel_thunder_wall"];
         DisableDarkTunnelBridgeCollapse = (bool)slotData["disable_dark_tunnel_bridge_collapse"];
         DisableUnimportantCutscenes = (bool)slotData["disable_unimportant_cutscenes"];
+        FillerSoulsAmount = (int)(long)slotData["filler_souls_amount"];
     }
 }

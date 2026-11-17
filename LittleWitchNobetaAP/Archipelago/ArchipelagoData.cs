@@ -273,6 +273,8 @@ public static partial class ArchipelagoData
         { "MP Souls", "Filler" },
         { "Bonk Trap", "Trap" },
         { "Mana Drain Trap", "Trap" },
+        { "Darkness Trap", "Trap" },
+        { "Shrink Trap", "Trap" },
         { "1. Crafted Soul Reader", "Lore" },
         { "2. Stained Ribbon", "Lore" },
         { "3. Copper Coin", "Lore" },

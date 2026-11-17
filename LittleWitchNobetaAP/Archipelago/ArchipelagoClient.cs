@@ -489,6 +489,12 @@ public class ArchipelagoClient : MonoBehaviour
             case "Mana Drain Trap":
                 FillerItemPatches.QueueTrap(TrapType.ManaDrainTrap);
                 break;
+            case "Darkness Trap":
+                FillerItemPatches.QueueTrap(TrapType.DarknessTrap);
+                break;
+            case "Shrink Trap":
+                FillerItemPatches.QueueTrap(TrapType.ShrinkTrap);
+                break;
         }
     }
 

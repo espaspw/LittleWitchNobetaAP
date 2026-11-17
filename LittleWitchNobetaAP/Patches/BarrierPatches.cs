@@ -460,86 +460,94 @@ public static class BarrierPatches
             // ReSharper restore UnusedMember.Local
         {
             if (Singletons.GameSave is null) return;
+            if (ArchipelagoClient.ServerData.Settings is null) return;
             // Door flags must be reset or else doors will be automatically open on
             // scene load without going through the OpenDoor.ReleaseEvent call.
             // TODO: Double check if additional flags need to be reset
 
-            Singletons.GameSave.flags.stage01OpenDoor01 = false;
-            Singletons.GameSave.flags.stage01OpenDoor02 = false;
-            Singletons.GameSave.flags.stage01OpenDoor03 = false;
-            Singletons.GameSave.flags.stage01Room08Door = false;
-            Singletons.GameSave.flags.stage02OpenDoor = false;
-            Singletons.GameSave.flags.stage02L03BackDoor = false;
-            Singletons.GameSave.flags.stage03Room01DoorL = false;
-            Singletons.GameSave.flags.stage03Room01DoorR = false;
-            Singletons.GameSave.flags.stage03Room08ToBack = false;
-            Singletons.GameSave.flags.stage03Stage04BackDoor = false;
-            Singletons.GameSave.flags.stage04Room02DoorSwitch = false;
-            Singletons.GameSave.flags.stage04Room04CrystalBall = false;
+            if (ArchipelagoClient.ServerData.Settings.ShortcutGateBehaviour ==
+                ArchipelagoSettings.ShortcutGateBehaviourType.Randomized)
+            {
+                Singletons.GameSave.flags.stage01OpenDoor01 = false;
+                Singletons.GameSave.flags.stage01OpenDoor02 = false;
+                Singletons.GameSave.flags.stage01OpenDoor03 = false;
+                Singletons.GameSave.flags.stage01Room08Door = false;
+                Singletons.GameSave.flags.stage02OpenDoor = false;
+                Singletons.GameSave.flags.stage02L03BackDoor = false;
+                Singletons.GameSave.flags.stage03Room01DoorL = false;
+                Singletons.GameSave.flags.stage03Room01DoorR = false;
+                Singletons.GameSave.flags.stage03Room08ToBack = false;
+                Singletons.GameSave.flags.stage03Stage04BackDoor = false;
+                Singletons.GameSave.flags.stage04Room02DoorSwitch = false;
+                Singletons.GameSave.flags.stage04Room04CrystalBall = false;
 
-            Singletons.GameSave.flags.stage05Room02DoorSwitch = false;
-            Singletons.GameSave.flags.stage05Room03To04DoorSwitch = false;
-            Singletons.GameSave.flags.stage05Room04DoorSwitch = false;
+                Singletons.GameSave.flags.stage05Room02DoorSwitch = false;
+                Singletons.GameSave.flags.stage05Room03To04DoorSwitch = false;
+                Singletons.GameSave.flags.stage05Room04DoorSwitch = false;
 
-            Singletons.GameSave.flags.stage06Act02Alarm = false;
+                Singletons.GameSave.flags.stage06Act02Alarm = false;
+                Melon<LwnApMod>.Logger.Msg($"Reset door related flags.");
+            }
 
-            Melon<LwnApMod>.Logger.Msg($"Reset door related flags.");
 
             // Reset all barrier related flags. Flags cause barriers to release on stage load
             // without calling the typical method like ReleaseEvent, meaning logic could break
             // (e.g. player breaks switch and reloads stage, causing barrier to be released
             // even though they didn't get the corresponding barrier item)
 
-            Singletons.GameSave.flags.stage01MeetCat = false;
-            Singletons.GameSave.flags.stage01Room03 = false;
-            Singletons.GameSave.flags.stage01Room04 = false;
-            Singletons.GameSave.flags.stage01Room06To07 = false;
-            Singletons.GameSave.flags.stage01Room07Barrier = false;
-            Singletons.GameSave.flags.stage01Room08Door = false;
-            Singletons.GameSave.flags.stage01Room09Barrier = false;
+            if (ArchipelagoClient.ServerData.Settings.BarrierBehaviour ==
+                ArchipelagoSettings.MagicPuzzleGateBehaviourType.Randomized)
+            {
+                Singletons.GameSave.flags.stage01MeetCat = false;
+                Singletons.GameSave.flags.stage01Room03 = false;
+                Singletons.GameSave.flags.stage01Room04 = false;
+                Singletons.GameSave.flags.stage01Room06To07 = false;
+                Singletons.GameSave.flags.stage01Room07Barrier = false;
+                Singletons.GameSave.flags.stage01Room08Door = false;
+                Singletons.GameSave.flags.stage01Room09Barrier = false;
 
-            Singletons.GameSave.flags.stage02Room06 = false;
-            Singletons.GameSave.flags.stage02Room08 = false;
-            Singletons.GameSave.flags.stage02Room09 = false;
+                Singletons.GameSave.flags.stage02Room06 = false;
+                Singletons.GameSave.flags.stage02Room08 = false;
+                Singletons.GameSave.flags.stage02Room09 = false;
 
-            Singletons.GameSave.flags.stage03Room02 = false;
-            Singletons.GameSave.flags.stage03Room04Event02 = false;
-            Singletons.GameSave.flags.stage03Room06 = false;
+                Singletons.GameSave.flags.stage03Room02 = false;
+                Singletons.GameSave.flags.stage03Room04Event02 = false;
+                Singletons.GameSave.flags.stage03Room06 = false;
 
-            // Barrier switch before getting hat
-            Singletons.GameSave.flags.stage04Room02Switch = false;
-            // Initial crystal ball after getting back hat
-            Singletons.GameSave.flags.stage04Room01To04CrystalBall = false;
-            // Reset barriers in thunder requirement room
-            Singletons.GameSave.flags.stage04Room06 = false;
-            // Reset move floor switches
-            Singletons.GameSave.flags.stage04Room07MoveFloor01 = false;
-            Singletons.GameSave.flags.stage04Room07MoveFloor02 = false;
-            Singletons.GameSave.flags.stage04Room07MoveFloor03 = false;
+                // Barrier switch before getting hat
+                Singletons.GameSave.flags.stage04Room02Switch = false;
+                // Initial crystal ball after getting back hat
+                Singletons.GameSave.flags.stage04Room01To04CrystalBall = false;
+                // Reset barriers in thunder requirement room
+                Singletons.GameSave.flags.stage04Room06 = false;
+                // Reset move floor switches
+                Singletons.GameSave.flags.stage04Room07MoveFloor01 = false;
+                Singletons.GameSave.flags.stage04Room07MoveFloor02 = false;
+                Singletons.GameSave.flags.stage04Room07MoveFloor03 = false;
 
-            // Reset arcane barrier and platform shortcuts
-            Singletons.GameSave.flags.stage05Room04_01 = false;
-            Singletons.GameSave.flags.stage05Room04_02 = false;
-            // Reset Seal fights as it releases the barriers
-            Singletons.GameSave.flags.stage05Room05 = false;
-            Singletons.GameSave.flags.stage05Room06 = false;
-            // Reset lift, fire puzzle, and top barrier
-            Singletons.GameSave.flags.stage05Room07_01 = false;
-            Singletons.GameSave.flags.stage05Room07_02 = false;
-            Singletons.GameSave.flags.stage05Room07_03 = false;
+                // Reset arcane barrier and platform shortcuts
+                Singletons.GameSave.flags.stage05Room04_01 = false;
+                Singletons.GameSave.flags.stage05Room04_02 = false;
+                // Reset Seal fights as it releases the barriers
+                Singletons.GameSave.flags.stage05Room05 = false;
+                Singletons.GameSave.flags.stage05Room06 = false;
+                // Reset lift, fire puzzle, and top barrier
+                Singletons.GameSave.flags.stage05Room07_01 = false;
+                Singletons.GameSave.flags.stage05Room07_02 = false;
+                Singletons.GameSave.flags.stage05Room07_03 = false;
 
-            // Prevent giant maid barrier from releasing
-            Singletons.GameSave.flags.stage06Act02Clear = false;
-            // Prevent underground trial barrier from releasing
-            Singletons.GameSave.flags.stage06Act03Clear = false;
-            // Prevent lava ruins lava floor from moving early
-            Singletons.GameSave.flags.stage06Act04Siwtch = false;
-            // Reset Abyss trial switches, otherwise teleporter will enable on init
-            Singletons.GameSave.flags.stage06RoomCentralAct03 = false;
-            Singletons.GameSave.flags.stage06RoomCentralAct04 = false;
-            Singletons.GameSave.flags.stage06RoomCentralAct05 = false;
-
-            Melon<LwnApMod>.Logger.Msg($"Reset magic puzzle gate flags.");
+                // Prevent giant maid barrier from releasing
+                Singletons.GameSave.flags.stage06Act02Clear = false;
+                // Prevent underground trial barrier from releasing
+                Singletons.GameSave.flags.stage06Act03Clear = false;
+                // Prevent lava ruins lava floor from moving early
+                Singletons.GameSave.flags.stage06Act04Siwtch = false;
+                // Reset Abyss trial switches, otherwise teleporter will enable on init
+                Singletons.GameSave.flags.stage06RoomCentralAct03 = false;
+                Singletons.GameSave.flags.stage06RoomCentralAct04 = false;
+                Singletons.GameSave.flags.stage06RoomCentralAct05 = false;
+                Melon<LwnApMod>.Logger.Msg($"Reset magic puzzle gate flags.");
+            }
         }
     }
 
